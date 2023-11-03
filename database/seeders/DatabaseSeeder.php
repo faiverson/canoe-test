@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             DB::statement('SET FOREIGN_KEY_CHECKS=1');
         }
 
+        $this->call(AliasSeeder::class);
         $this->call(CompanySeed::class);
         $this->call(FundSeeder::class);
     }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Alias;
 use App\Models\Company;
 use App\Models\Fund;
 use App\Models\FundManager;
@@ -19,14 +20,12 @@ class FundFactory extends Factory
      */
     public function definition(): array
     {
-        $words = [fake()->word(), fake()->word(), fake()->word(), fake()->word(), fake()->word()];
         return [
             'name' => fake()->company(),
             'start_year' => fake()->numberBetween(1980, 2023),
             'manager_id' => function () {
                 return FundManager::factory()->create()->getKey();
             },
-            'aliases' => fake()->boolean() ? fake()->randomElements($words, fake()->numberBetween(1,5)) : null,
         ];
     }
 
@@ -35,6 +34,9 @@ class FundFactory extends Factory
         return $this->afterCreating(function (Fund $fund) {
             $fund->companies()->sync(
                 Company::inRandomOrder()->take(fake()->randomElement([1,5]))->get()
+            );
+            $fund->aliases()->sync(
+                Alias::inRandomOrder()->take(fake()->randomElement([1,5]))->get()
             );
         });
     }

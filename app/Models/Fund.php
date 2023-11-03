@@ -11,11 +11,9 @@ class Fund extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'start_year', 'manager_id', 'aliases'];
+    protected $fillable = ['name', 'start_year', 'manager_id'];
 
-    protected $casts = [
-        'aliases' => 'array',
-    ];
+    protected $with = ['manager', 'aliases', 'companies'];
 
     public function manager(): BelongsTo
     {
@@ -27,4 +25,8 @@ class Fund extends Model
         return $this->belongsToMany(Company::class, 'company_fund');
     }
 
+    public function aliases(): BelongsToMany
+    {
+        return $this->belongsToMany(Alias::class, 'alias_fund');
+    }
 }

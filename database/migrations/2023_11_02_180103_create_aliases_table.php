@@ -11,15 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('funds', function (Blueprint $table) {
+        Schema::create('aliases', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('start_year');
-
-            $table->unsignedBigInteger('manager_id');
-            $table->foreign('manager_id')->references('id')->on('fund_managers');
-
-            $table->timestamps();
+            $table->string('alias');
         });
     }
 
@@ -28,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('funds');
+        Schema::dropIfExists('aliases');
     }
 };

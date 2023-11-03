@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Models\PotentialDuplicatedFund;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +16,11 @@ class FundListener
     {
         $existingFund = $event->existingFund;
         $newFund = $event->newFund;
+
+        PotentialDuplicatedFund::create([
+            'original_fund_id' => $existingFund->getKey(),
+            'duplicated_fund_id' => $newFund->getKey(),
+        ]);
 
         // log a warning message
         Log::warning("Duplicate fund warning: New fund (ID {$newFund->getKey()}) created with the same manager and name/alias than existent fund (ID {$existingFund->getKey()})");

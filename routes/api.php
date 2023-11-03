@@ -23,4 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::resource('companies', CompanyController::class)->except(['create', 'edit', 'update', 'show', 'delete', 'edit']);
 Route::resource('funds', FundController::class)->except(['create', 'edit']);
+Route::get('possible-duplicated-funds', [FundController::class, 'possibleDuplicatedFund']);
 Route::resource('fund-managers', FundManagerController::class)->except(['create', 'edit', 'show']);

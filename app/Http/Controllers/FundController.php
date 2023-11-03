@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\FundResource;
+use App\Http\Resources\FundResourceCollection;
+use App\Http\Resources\PotentialDuplicatedFundResourceCollection;
 use App\Models\Fund;
+use App\Models\PotentialDuplicatedFund;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -26,7 +30,7 @@ class FundController extends Controller
             $query->where('start_year', $request->input('year'));
         }
 
-        return response()->json($query->with(['manager', 'companies'])->get());
+        return response()->json(new FundResourceCollection($query->get()));
     }
 
     public function store(Request $request): JsonResponse
@@ -35,17 +39,25 @@ class FundController extends Controller
             'name' => 'required',
             'start_year' => 'required|integer',
             'manager_id' => 'required',
-            'aliases' => 'nullable|array',
         ]);
 
         $fund = Fund::create($data);
-        return response()->json($fund, 201);
+        return response()->json(new FundResource($fund), 201);
     }
 
     public function show(string $id): JsonResponse
     {
-        $fund = Fund::with(['manager', 'companies'])->findOrFail($id);
-        return response()->json($fund);
+        $fund = Fund::findOrFail($id);
+        return response()->json(new FundResource($fund));
+    }
+
+    /*
+     * Return pairs of possible duplicated funds
+     */
+    public function possibleDuplicatedFund(): JsonResponse
+    {
+        $duplicated = PotentialDuplicatedFund::all();
+        return response()->json(new PotentialDuplicatedFundResourceCollection($duplicated));
     }
 
     public function update(Request $request, string $id): JsonResponse
@@ -55,16 +67,20 @@ class FundController extends Controller
             'name' => 'filled',
             'start_year' => 'filled|integer',
             'manager_id' => 'filled|exists:fund_managers,id',
-            'aliases' => 'filled|array',
+            'alias_ids.*' => 'filled|exists:aliases,id',
             'company_ids.*' => 'filled|exists:companies,id',
         ]);
+
+        if (isset($data['alias_ids'])) {
+            $fund->aliases()->sync($data['alias_ids']);
+        }
 
         if (isset($data['company_ids'])) {
             $fund->companies()->sync($data['company_ids']);
         }
 
         $fund->update($data);
-        return response()->json($fund);
+        return response()->json(new FundResource($fund->fresh()));
     }
 
     public function destroy(string $id): JsonResponse

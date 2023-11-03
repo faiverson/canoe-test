@@ -1,4 +1,4 @@
-## Running the test
+## Running the site
 
 - You need to setup a basic MySQL database connection
 - Create a database called `canoe_test`
@@ -27,10 +27,8 @@ sail php artisan route:list
 
 
 ### Some considerations:
-- I didn't include the time to create the readme and the container in the 2 hours, but I've respected not to improve the code adding more time
-- I didn't have time to change aliases to be an entity/model instead an array
-- I didn't have time to complete tests
+- This took 3 hours
+- It has only basic tests, you can run:
 ```shell
 sail php artisan test
 ```
-- I didn't have time to complete the extra task
